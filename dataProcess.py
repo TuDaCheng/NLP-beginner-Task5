@@ -1,16 +1,16 @@
 #!/usr/bin/env python
-
 import os
 import json
 import re
 import numpy as np
 
 
+# 获取原数据并预处理
 def parse_raw_data(data_path, category, author, constrain):
     """
     获取原数据并预处理
-    :param data_path: 数据存放的路径
-    :param category: 数据的类型
+    :param data_path: 数据存放的路径   ./json数据
+    :param category: 数据的类型     "poet.tang"
     :param author: 作者名称
     :param constrain: 长度限制
     :return: list
@@ -156,12 +156,15 @@ def get_data(config):
     data = parse_raw_data(config.data_path, config.category, config.author, config.constrain)
 
     # 2.构建词典
+    # 每一个字符
     chars = {c for line in data for c in line}
+    # 字符对应序列
     char_to_ix = {char: ix for ix, char in enumerate(chars)}
+    # 添加特殊标记符
     char_to_ix['<EOP>'] = len(char_to_ix)
     char_to_ix['<START>'] = len(char_to_ix)
     char_to_ix['</s>'] = len(char_to_ix)
-
+    # 序列对应字符
     ix_to_chars = {ix: char for char, ix in list(char_to_ix.items())}
 
     # 3.处理样本

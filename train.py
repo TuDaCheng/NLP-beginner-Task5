@@ -4,14 +4,13 @@ import torch
 import torch.utils.data as Data
 import torch.nn as nn
 import torch.optim as optim
-from model import PoetryModel
-from dataHandler import *
+from LSTM_model import PoetryModel
+from dataProcess import *
 from config import Config
 from tqdm import tqdm
 
 class TrainModel(object):
     def __init__(self):
-
         os.environ["CUDA_VISIBLE_DEVICES"] = '0'
         self.config = Config()
         self.device = torch.device('cuda') if self.config.use_gpu else torch.device('cpu')
@@ -35,6 +34,9 @@ class TrainModel(object):
                 output, _ = model(input_, hidden)
                 loss = criterion(output, target) # output:(max_len*batch_size,vocab_size), target:(max_len*batch_size)
 
+                # 计算语言模型的困惑度
+                perplexity=torch.exp(loss)
+
                 # 反向计算梯度
                 loss.backward()
 
@@ -42,7 +44,7 @@ class TrainModel(object):
                 optimizer.step()
 
                 if step % 200 == 0:
-                    print('epoch: %d,loss: %f' % (epoch, loss.data))
+                    print('epoch: %d,loss: %f,perplexity: %d' % (epoch, loss.data,perplexity))
 
             if epoch % 1 == 0:
                 # 保存模型

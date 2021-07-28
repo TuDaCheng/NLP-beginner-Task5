@@ -3,7 +3,7 @@
 import os
 from config import Config
 import numpy as np
-from model import PoetryModel
+from LSTM_model import PoetryModel
 import torch
 
 
